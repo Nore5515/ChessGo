@@ -1,0 +1,2 @@
+# ChessGo
+ Chess in Golang
