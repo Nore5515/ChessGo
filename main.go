@@ -9,20 +9,21 @@ import (
 	"time"
 )
 
+// Piece is just a piece
 type Piece struct {
 	name  string
 	color string
 }
 
+// Tile does stuff
 type Tile struct {
-	held interface{}
+	held *Piece
 }
 
+// Board holds tiles
 type Board struct {
 	board [8][8]Tile
 }
-
-var threedim [5][10][4]int
 
 func (b *Board) config() {
 
@@ -30,63 +31,54 @@ func (b *Board) config() {
 	b.board = [8][8]Tile{
 		// Row 1 [0][0-7]
 		{
-			Tile{Piece{"Rook", "White"}}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{&Piece{"Rook", "White"}}, Tile{&Piece{"Bishop", "White"}}, Tile{Piece{"Knight", "White"}}, Tile{Piece{"King", "White"}}, Tile{Piece{"Queen", "White"}}, Tile{Piece{"Knight", "White"}}, Tile{Piece{"Bishop", "White"}}, Tile{Piece{"Rook", "White"}},
 		},
 
 		// Row 2 [1][0-7]
 		{
-			Tile{nil}, Tile{Piece{"Pawn", "White"}}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			//Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}},
+			Tile{}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}},
 		},
 
 		// Row 3 [2][0-7]
 		{
-			Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{},
 		},
 
 		// Row 4 [3][0-7]
 		{
-			Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{},
 		},
 
 		// Row 5 [4][0-7]
 		{
-			Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{},
 		},
 
 		// Row 6 [5][0-7]
 		{
-			Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{},
 		},
 
 		// Row 7 [6][0-7]
 		{
-			Tile{nil}, Tile{Piece{"Pawn", "Black"}}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}},
 		},
 
 		// Row 8 [7][0-7]
 		{
-			Tile{Piece{"Rook", "Black"}}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil}, Tile{nil},
+			Tile{Piece{"Rook", "Black"}}, Tile{Piece{"Bishop", "Black"}}, Tile{Piece{"Knight", "Black"}}, Tile{Piece{"King", "Black"}}, Tile{Piece{"Queen", "Black"}}, Tile{Piece{"Knight", "Black"}}, Tile{Piece{"Bishop", "Black"}}, Tile{Piece{"Rook", "Black"}},
 		},
 	}
 
-	//b.board = make([8][8]struct{}, 1)
-	//b.board = make([8][8]interface{})
+}
 
-	//b.board[0][0] = nil
+func (b *Board) getTile(x int, y int) Tile {
+	return b.board[y][x]
+}
 
-	//b.board[0] = [8]Piece{nil, nil, nil, nil, nil, nil, nil, nil}
-	//[8]string{"a", "b", "c", "d", "e", "f", "g", "h"}
-
-	// b.board = [8][8]interface{
-	// 	{Piece{"Pawn", "White"}, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// 	{nil, nil, nil, nil, nil, nil, nil, nil},
-	// }
+func (p *Piece) getMoves() {
+	fmt.Println("Hello!")
 }
 
 func main() {
@@ -103,11 +95,9 @@ func main() {
 	b := Board{}
 	b.config()
 
-	fmt.Println(b)
-	fmt.Println(b.board[0][0])
-	fmt.Println(b.board[1][1])
-	fmt.Println(b.board[6][1])
-	fmt.Println(b.board[7][0])
+	fmt.Println(b.getTile(0, 0))
+	fmt.Println(b.getTile(0, 1))
+	b.getTile(0, 0).held.getMoves()
 
 	//for x := 0; x < 10; x++ {
 	//	fmt.Println(generatePiece() + generateMove())
