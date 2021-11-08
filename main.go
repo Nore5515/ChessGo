@@ -31,13 +31,13 @@ func (b *Board) config() {
 	b.board = [8][8]Tile{
 		// Row 1 [0][0-7]
 		{
-			Tile{&Piece{"Rook", "White"}}, Tile{&Piece{"Bishop", "White"}}, Tile{Piece{"Knight", "White"}}, Tile{Piece{"King", "White"}}, Tile{Piece{"Queen", "White"}}, Tile{Piece{"Knight", "White"}}, Tile{Piece{"Bishop", "White"}}, Tile{Piece{"Rook", "White"}},
+			Tile{&Piece{"Rook", "White"}}, Tile{&Piece{"Bishop", "White"}}, Tile{&Piece{"Knight", "White"}}, Tile{&Piece{"King", "White"}}, Tile{&Piece{"Queen", "White"}}, Tile{&Piece{"Knight", "White"}}, Tile{&Piece{"Bishop", "White"}}, Tile{&Piece{"Rook", "White"}},
 		},
 
 		// Row 2 [1][0-7]
 		{
 			//Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}},
-			Tile{}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}}, Tile{Piece{"Pawn", "White"}},
+			Tile{}, Tile{&Piece{"Pawn", "White"}}, Tile{&Piece{"Pawn", "White"}}, Tile{&Piece{"Pawn", "White"}}, Tile{&Piece{"Pawn", "White"}}, Tile{&Piece{"Pawn", "White"}}, Tile{&Piece{"Pawn", "White"}}, Tile{&Piece{"Pawn", "White"}},
 		},
 
 		// Row 3 [2][0-7]
@@ -62,43 +62,106 @@ func (b *Board) config() {
 
 		// Row 7 [6][0-7]
 		{
-			Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}}, Tile{Piece{"Pawn", "Black"}},
+			Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}}, Tile{&Piece{"Pawn", "Black"}},
 		},
 
 		// Row 8 [7][0-7]
 		{
-			Tile{Piece{"Rook", "Black"}}, Tile{Piece{"Bishop", "Black"}}, Tile{Piece{"Knight", "Black"}}, Tile{Piece{"King", "Black"}}, Tile{Piece{"Queen", "Black"}}, Tile{Piece{"Knight", "Black"}}, Tile{Piece{"Bishop", "Black"}}, Tile{Piece{"Rook", "Black"}},
+			Tile{&Piece{"Rook", "Black"}}, Tile{&Piece{"Bishop", "Black"}}, Tile{&Piece{"Knight", "Black"}}, Tile{&Piece{"King", "Black"}}, Tile{&Piece{"Queen", "Black"}}, Tile{&Piece{"Knight", "Black"}}, Tile{&Piece{"Bishop", "Black"}}, Tile{&Piece{"Rook", "Black"}},
 		},
 	}
 
 }
 
-func (b *Board) getTile(x int, y int) Tile {
-	return b.board[y][x]
+type Vertex struct {
+	x, y int
+}
+
+func (b *Board) getTile(x int, y int) *Tile {
+	foo := &b.board[y][x]
+	return foo
+}
+
+func (b *Board) getTileLocation(t *Tile) Vertex {
+	var foo *Tile
+
+	for x := 0; x < 8; x++ {
+		for y := 0; y < 8; y++ {
+			foo = b.getTile(x, y)
+			if foo == t {
+				return Vertex{x, y}
+			}
+		}
+	}
+	return Vertex{-1, -1}
 }
 
 func (p *Piece) getMoves() {
-	fmt.Println("Hello!")
+	//fmt.Println("Hello!")
+}
+
+// For later, add a check to prevent duplicates
+func getPieceMoves(p *Piece, b *Board) []*Tile {
+	x, y := getPieceLocation(p, b)
+
+	var moves []*Tile
+	var foo *Tile
+
+	if p.name == "Rook" {
+		for i := 0; i < 8; i++ {
+			foo = b.getTile(i, y)
+			if b.getTile(i, y).held == nil {
+				moves = append(moves, foo)
+			}
+
+			foo = b.getTile(x, i)
+			if b.getTile(x, i).held == nil {
+				moves = append(moves, foo)
+			}
+		}
+	}
+
+	return moves
+}
+
+func getPieceLocation(p *Piece, b *Board) (int, int) {
+	for y := 0; y < 8; y++ {
+		for x := 0; x < 8; x++ {
+			if b.getTile(x, y).held == p {
+				return x, y
+			}
+		}
+	}
+	return -1, -1
 }
 
 func main() {
 	fmt.Println("Hello, World!")
 
-	// a 8x8 chessboard! we will store all pieces here.
-	// pieces are saved like wK, wRa, bRh, etc
-	// first lower case is the color piece
-	// then the upper case is the actual peice type (none if pawn)
-	//the last letter (lowercase) is the column it starts on.
-	// wK is the white king, w = white, K = king
-	// wRa is the white left rook, w = white, R = rook, a = leftmost column
-
 	b := Board{}
 	b.config()
 
-	fmt.Println(b.getTile(0, 0))
-	fmt.Println(b.getTile(0, 1))
-	b.getTile(0, 0).held.getMoves()
+	fmt.Println(getPieceMoves(b.getTile(0, 0).held, &b))
 
+	moves := getPieceMoves(b.getTile(0, 0).held, &b)
+
+	for _, element := range moves {
+		fmt.Println(b.getTileLocation(element))
+	}
+
+	t1 := b.getTile(5, 5)
+	t2 := b.getTile(4, 4)
+	fmt.Println(&t1)
+	fmt.Println(&t2)
+	// WOO HOO!
+	if &t1 == &t2 {
+		fmt.Println("Shit.")
+	}
+
+	foo := b.getTile(3, 4)
+	fmt.Println(b.getTileLocation(foo))
+
+	//fmt.Println(b.getTileLocation(b.getTile(7, 7)))
 	//for x := 0; x < 10; x++ {
 	//	fmt.Println(generatePiece() + generateMove())
 	//}
