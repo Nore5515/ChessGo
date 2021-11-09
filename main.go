@@ -104,11 +104,72 @@ func (p *Piece) getMoves() {
 func getPieceMoves(p *Piece, b *Board) []*Tile {
 	x, y := getPieceLocation(p, b)
 
+	x1, y1 := 0, 0
+
 	var moves []*Tile
 	var foo *Tile
 
 	if p.name == "Rook" {
-		for i := 0; i < 8; i++ {
+
+		// Tile Distance
+		leftTiles := x
+		rightTiles := 8 - x
+		upTiles := y
+		downTiles := 8 - y
+
+		x1 = 1
+		for leftTiles > 0 {
+			foo = b.getTile(x-x1, y)
+			if foo.held != nil {
+				fmt.Println("Left stopped at ", x-x1)
+				leftTiles = 0
+			} else {
+				moves = append(moves, foo)
+			}
+			leftTiles--
+			x1++
+		}
+
+		x1 = 1
+		for rightTiles > 0 {
+			foo = b.getTile(x+x1, y)
+			if foo.held != nil {
+				fmt.Println("Right stopped at ", x+x1)
+				rightTiles = 0
+			} else {
+				moves = append(moves, foo)
+			}
+			rightTiles--
+			x1++
+		}
+
+		y1 = 1
+		for upTiles > 0 {
+			foo = b.getTile(x, y-y1)
+			if foo.held != nil {
+				fmt.Println("Up stopped at ", y-y1)
+				upTiles = 0
+			} else {
+				moves = append(moves, foo)
+			}
+			upTiles--
+			y1++
+		}
+
+		y1 = 1
+		for downTiles > 0 {
+			foo = b.getTile(x, y+y1)
+			if foo.held != nil {
+				fmt.Println("Down stopped at ", y+y1)
+				downTiles = 0
+			} else {
+				moves = append(moves, foo)
+			}
+			downTiles--
+			y1++
+		}
+
+		/*for i := 0; i < 8; i++ {
 			foo = b.getTile(i, y)
 			if b.getTile(i, y).held == nil {
 				moves = append(moves, foo)
@@ -118,7 +179,7 @@ func getPieceMoves(p *Piece, b *Board) []*Tile {
 			if b.getTile(x, i).held == nil {
 				moves = append(moves, foo)
 			}
-		}
+		}*/
 	}
 
 	return moves
@@ -141,25 +202,11 @@ func main() {
 	b := Board{}
 	b.config()
 
-	fmt.Println(getPieceMoves(b.getTile(0, 0).held, &b))
-
 	moves := getPieceMoves(b.getTile(0, 0).held, &b)
 
 	for _, element := range moves {
 		fmt.Println(b.getTileLocation(element))
 	}
-
-	t1 := b.getTile(5, 5)
-	t2 := b.getTile(4, 4)
-	fmt.Println(&t1)
-	fmt.Println(&t2)
-	// WOO HOO!
-	if &t1 == &t2 {
-		fmt.Println("Shit.")
-	}
-
-	foo := b.getTile(3, 4)
-	fmt.Println(b.getTileLocation(foo))
 
 	//fmt.Println(b.getTileLocation(b.getTile(7, 7)))
 	//for x := 0; x < 10; x++ {
