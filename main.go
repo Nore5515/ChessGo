@@ -47,7 +47,7 @@ func (b *Board) config() {
 
 		// Row 4 [3][0-7]
 		{
-			Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{}, Tile{},
+			Tile{}, Tile{}, Tile{}, Tile{&Piece{"Rook", "White"}}, Tile{}, Tile{}, Tile{}, Tile{},
 		},
 
 		// Row 5 [4][0-7]
@@ -96,6 +96,39 @@ func (b *Board) getTileLocation(t *Tile) Vertex {
 	return Vertex{-1, -1}
 }
 
+func (b *Board) swapPieces(t1 *Tile, t2 *Tile) {
+	temp := t1.held
+	t1.held = t2.held
+	t2.held = temp
+}
+
+func (b *Board) hardMove(t1 *Tile, t2 *Tile) {
+	fmt.Println("T1 Held: ", t1.held, "\nT2 Held: ", t2.held)
+	newTile := Tile{t1.held}
+	t1.held = &Piece{}
+	t2.held = newTile.held
+	fmt.Println("T1 Held: ", t1.held, "\nT2 Held: ", t2.held)
+}
+
+// Give tile of piece you want to move and tile you want to move to
+func (b *Board) movePiece(t1 *Tile, t2 *Tile) {
+	validMoves := getPieceMoves(t1.held, b)
+	has := false
+	for _, element := range validMoves {
+		if element == t2 {
+			has = true
+		}
+	}
+
+	if has {
+		fmt.Println("Valid Move")
+		b.hardMove(t1, t2)
+		//b.swapPieces(t1, t2)
+	} else {
+		fmt.Println("Invalid Move")
+	}
+}
+
 func (p *Piece) getMoves() {
 	//fmt.Println("Hello!")
 }
@@ -113,15 +146,19 @@ func getPieceMoves(p *Piece, b *Board) []*Tile {
 
 		// Tile Distance
 		leftTiles := x
-		rightTiles := 8 - x
+		rightTiles := 8 - x - 1
 		upTiles := y
-		downTiles := 8 - y
+		downTiles := 8 - y - 1
+		//fmt.Println(leftTiles, rightTiles, upTiles, downTiles)
 
 		x1 = 1
 		for leftTiles > 0 {
 			foo = b.getTile(x-x1, y)
 			if foo.held != nil {
-				fmt.Println("Left stopped at ", x-x1)
+				if foo.held.color != p.color {
+					moves = append(moves, foo)
+				}
+				//fmt.Println("Left stopped at ", x-x1)
 				leftTiles = 0
 			} else {
 				moves = append(moves, foo)
@@ -131,10 +168,13 @@ func getPieceMoves(p *Piece, b *Board) []*Tile {
 		}
 
 		x1 = 1
-		for rightTiles > 0 {
+		for rightTiles >= 0 {
 			foo = b.getTile(x+x1, y)
 			if foo.held != nil {
-				fmt.Println("Right stopped at ", x+x1)
+				if foo.held.color != p.color {
+					moves = append(moves, foo)
+				}
+				//fmt.Println("Right stopped at ", x+x1)
 				rightTiles = 0
 			} else {
 				moves = append(moves, foo)
@@ -147,7 +187,10 @@ func getPieceMoves(p *Piece, b *Board) []*Tile {
 		for upTiles > 0 {
 			foo = b.getTile(x, y-y1)
 			if foo.held != nil {
-				fmt.Println("Up stopped at ", y-y1)
+				if foo.held.color != p.color {
+					moves = append(moves, foo)
+				}
+				//fmt.Println("Up stopped at ", y-y1)
 				upTiles = 0
 			} else {
 				moves = append(moves, foo)
@@ -157,10 +200,13 @@ func getPieceMoves(p *Piece, b *Board) []*Tile {
 		}
 
 		y1 = 1
-		for downTiles > 0 {
+		for downTiles >= 0 {
 			foo = b.getTile(x, y+y1)
 			if foo.held != nil {
-				fmt.Println("Down stopped at ", y+y1)
+				if foo.held.color != p.color {
+					moves = append(moves, foo)
+				}
+				//fmt.Println("Down stopped at ", y+y1)
 				downTiles = 0
 			} else {
 				moves = append(moves, foo)
@@ -207,6 +253,12 @@ func main() {
 	for _, element := range moves {
 		fmt.Println(b.getTileLocation(element))
 	}
+
+	fmt.Println(b.getTile(0, 0).held, b.getTile(0, 6).held)
+	fmt.Println(b.getTileLocation(getPieceMoves(b.getTile(0, 0).held, &b)[0]))
+	//fmt.Println("Moves", getPieceMoves(b.getTile(0, 0).held, &b))
+	b.movePiece(b.getTile(0, 0), b.getTile(0, 6))
+	fmt.Println(b.getTile(0, 0).held, b.getTile(0, 6).held)
 
 	//fmt.Println(b.getTileLocation(b.getTile(7, 7)))
 	//for x := 0; x < 10; x++ {
